@@ -37,6 +37,6 @@ yum repolist
 yum install -y python2-iml-manager
 chroma-config setup admin lustre localhost --no-dbspace-check -v
 
-
+chroma --username admin --password lustre server add mds1.local --server_profile base_managed_rh7
 
 --------------------------------
