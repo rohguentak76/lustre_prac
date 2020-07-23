@@ -40,3 +40,5 @@ chroma-config setup admin lustre localhost --no-dbspace-check -v
 chroma --username admin --password lustre server add mds1.local --server_profile base_managed_rh7
 
 --------------------------------
+
+lnetctl set discovery [0 | 1]
