@@ -42,3 +42,4 @@ chroma --username admin --password lustre server add mds1.local --server_profile
 --------------------------------
 
 lnetctl set discovery [0 | 1]
+createrepo -g /path/to/mygroups.xml /srv/my/repo      //그룹list 추가
