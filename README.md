@@ -47,16 +47,37 @@ createrepo -g /path/to/mygroups.xml /srv/my/repo      //그룹list 추가
 -------------------------------------------------------------------------------------
 monitored zfs
 -------------
+mds[1,2] oss[1,2]
+-----------------
+  #yum install -y --exclude kernel-debug python2-iml-agent-management kernel-devel-lustre pcs fence-agents fence-agents-virsh lustre-resource-agents lustre-ldiskfs-zfs python2-iml-agent-4.2.0-1.el7
 
-yum install -y --exclude kernel-debug python2-iml-agent-management kernel-devel-lustre pcs fence-agents fence-agents-virsh lustre-resource-agents lustre-ldiskfs-zfs python2-iml-agent-4.2.0-1.el7
+  #systemctl reboot
 
-reboot
-
-lnet config
-config ntp
-
-pcs cluster auth 10.128.0.11 -u hacluster -p ********************: 0
-10.128.0.11: Authorized
+  #lnetctl net del --net tcp
+  #lnetctl net add --net tcp --if eth1
+  
+  config ntp
+mds1
+----
+  #passwd hacluster      //모든 서버에서 설정
+  #pcs cluster auth mds1.local mds2.local 
+  username:
+  password:
+  mds1.local: Authorized
+  mds2.local: Authorized
+  #pcs cluster setup --start --name mds-cluster mds1.local mds2.local --enable --token 17000
+  #pcs stonith create st-fencing fence_chroma
+  
+oss1
+----
+  #pcs cluster auth oss1.local oss2.local 
+  username:
+  password:
+  oss1.local: Authorized
+  oss2.local: Authorized
+  #pcs cluster setup --start --name oss-cluster oss1.local oss2.local --enable --token 17000
+  #pcs stonith create st-fencing fence_chroma
+  
 
 pcs cluster node add 10.128.0.11: 0
 Disabling SBD service...
