@@ -49,18 +49,20 @@ monitored zfs
 -------------
 mds[1,2] oss[1,2]
 -----------------
-  #yum install -y --exclude kernel-debug python2-iml-agent-management kernel-devel-lustre pcs fence-agents fence-agents-virsh lustre-resource-agents lustre-ldiskfs-zfs python2-iml-agent-4.2.0-1.el7
+    #yum install -y --exclude kernel-debug python2-iml-agent-management kernel-devel-lustre pcs fence-agents fence-agents-virsh lustre-resource-agents lustre-ldiskfs-zfs python2-iml-agent-4.2.0-1.el7
 
-  #systemctl reboot
+    #systemctl reboot
 
-  #lnetctl net del --net tcp
-  #lnetctl net add --net tcp --if eth1
+    #lnetctl net del --net tcp
   
-  config ntp
+    #lnetctl net add --net tcp --if eth1
+  
+    config ntp
 mds1
 ----
-  #passwd hacluster      //모든 서버에서 설정
-  #pcs cluster auth mds1.local mds2.local 
+    #passwd hacluster      //모든 서버에서 설정
+  
+    #pcs cluster auth mds1.local mds2.local 
   username:
   password:
   mds1.local: Authorized
