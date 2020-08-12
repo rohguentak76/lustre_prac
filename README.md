@@ -88,37 +88,39 @@ oss1
       #pcs cluster setup --start --name oss-cluster oss1.local oss2.local --enable --token 17000
       #pcs stonith create st-fencing fence_chroma
   
+iml상 pacemaker 설정
+-------------------
+                  #pcs cluster node add 10.128.0.11
+                  Disabling SBD service...
+                  10.128.0.11: sbd disabled
+                  Sending remote node configuration files to '10.128.0.11'
+                  10.128.0.11: successful distribution of the file 'pacemaker_remote authkey'
+                  10.128.0.12: Corosync updated
+                  Setting up corosync...
+                  10.128.0.11: Succeeded
+                  Synchronizing pcsd certificates on nodes 10.128.0.11...
+                  10.128.0.11: Success
+                  Restarting pcsd on the nodes in order to reload the certificates...
+                  10.128.0.11: Success
 
-pcs cluster node add 10.128.0.11: 0
-Disabling SBD service...
-10.128.0.11: sbd disabled
-Sending remote node configuration files to '10.128.0.11'
-10.128.0.11: successful distribution of the file 'pacemaker_remote authkey'
-10.128.0.12: Corosync updated
-Setting up corosync...
-10.128.0.11: Succeeded
-Synchronizing pcsd certificates on nodes 10.128.0.11...
-10.128.0.11: Success
-Restarting pcsd on the nodes in order to reload the certificates...
-10.128.0.11: Success
+                  #config corosync 
+                  #pcs cluster auth 10.128.0.12 -u hacluster -p ********************
+                  10.128.0.12: Authorized
 
-config corosync pcs cluster auth 10.128.0.12 -u hacluster -p ********************: 0
-10.128.0.12: Authorized
+                  #pcs cluster setup --name lustre-ha-cluster --force 10.128.0.12 --transport udp --rrpmode passive --addr0 10.128.0.0 --mcast0 226.94.0.1 --mcastport0 42227 --addr1 10.73.10.0 --mcast1 226.94.1.1 --mcastport1 42227 --token 17000 --fail_recv_const 10
+                  Destroying cluster on nodes: 10.128.0.12...
+                  10.128.0.12: Stopping Cluster (pacemaker)...
+                  10.128.0.12: Successfully destroyed cluster
 
-pcs cluster setup --name lustre-ha-cluster --force 10.128.0.12 --transport udp --rrpmode passive --addr0 10.128.0.0 --mcast0 226.94.0.1 --mcastport0 42227 --addr1 10.73.10.0 --mcast1 226.94.1.1 --mcastport1 42227 --token 17000 --fail_recv_const 10
-Destroying cluster on nodes: 10.128.0.12...
-10.128.0.12: Stopping Cluster (pacemaker)...
-10.128.0.12: Successfully destroyed cluster
+                  Sending 'pacemaker_remote authkey' to '10.128.0.12'
+                  10.128.0.12: successful distribution of the file 'pacemaker_remote authkey'
+                  Sending cluster config files to the nodes...
+                  10.128.0.12: Succeeded
 
-Sending 'pacemaker_remote authkey' to '10.128.0.12'
-10.128.0.12: successful distribution of the file 'pacemaker_remote authkey'
-Sending cluster config files to the nodes...
-10.128.0.12: Succeeded
-
-Synchronizing pcsd certificates on nodes 10.128.0.12...
-10.128.0.12: Success
-Restarting pcsd on the nodes in order to reload the certificates...
-10.128.0.12: Success
+                  Synchronizing pcsd certificates on nodes 10.128.0.12...
+                  10.128.0.12: Success
+                  Restarting pcsd on the nodes in order to reload the certificates...
+                  10.128.0.12: Success
 
 stonith resource 만 등록되어있음
 
