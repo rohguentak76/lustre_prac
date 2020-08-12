@@ -1,84 +1,92 @@
 # lustre_prac
-0. ntp설정
-1. iml 다운로드 및 서버 추가
-2. 러스터 설치
-3. lnet 설정 및 시작
-4. 러스터 모듈 추가
-5. zfs 모듈 추가 
-6. zfspool 생성
-7. dataset 생성
-8. 마운트
-9. iml
+      0. ntp설정
+      1. iml 다운로드 및 서버 추가
+      2. 러스터 설치
+      3. lnet 설정 및 시작
+      4. 러스터 모듈 추가
+      5. zfs 모듈 추가 
+      6. zfspool 생성
+      7. dataset 생성
+      8. 마운트
+      9. iml
  
 ------------------------------------
 managed lustre
 --------------
 
-yum repolist
+      #yum repolist
 
-yum-config-manager --disable updates
-yum install -y createrepo vsftpd
-mkdir /repo
-mount -t nfs 10.73.10.33:/root/Downloads /repo
+      #yum-config-manager --disable updates
 
-tar -xvzf /repo/local_repos.tar.gz -C /var/ftp
-createrepo /var/ftp
+      #yum install -y createrepo vsftpd
+      
+      #mkdir /repo
 
-vi /etc/yum.repos.d/remote.repo
+      #mount -t nfs 10.73.10.33:/root/Downloads /repo
 
-[remote]
-name=reomte
-baseurl=ftp://10.73.10.10
-enabled=1
-gpgcheck=0
+      #tar -xvzf /repo/local_repos.tar.gz -C /var/ftp
 
-yum-config-manager --enable remote
-yum repolist
-yum install -y python2-iml-manager
-chroma-config setup admin lustre localhost --no-dbspace-check -v
+      #createrepo /var/ftp
 
-chroma --username admin --password lustre server add mds1.local --server_profile base_managed_rh7
+      #vi /etc/yum.repos.d/remote.repo
+      [remote]
+      name=reomte
+      baseurl=ftp://10.73.10.10
+      enabled=1
+      gpgcheck=0
+
+      #yum-config-manager --enable remote
+      
+      #yum repolist
+      
+      #yum install -y python2-iml-manager
+      
+      #chroma-config setup admin lustre localhost --no-dbspace-check -v
+
+      #chroma --username admin --password lustre server add mds1.local --server_profile base_managed_rh7
 
 --------------------------------
-
-lnetctl set discovery [0 | 1]
+multirail
+---------
+      lnetctl set discovery [0 | 1]
+yum grouplist 추가
+-----------------
 createrepo -g /path/to/mygroups.xml /srv/my/repo      //그룹list 추가
 
--------------------------------------------------------------------------------------
 monitored zfs
 -------------
 mds[1,2] oss[1,2]
 -----------------
-    #yum install -y --exclude kernel-debug python2-iml-agent-management kernel-devel-lustre pcs fence-agents fence-agents-virsh lustre-resource-agents lustre-ldiskfs-zfs python2-iml-agent-4.2.0-1.el7
+      #yum install -y --exclude kernel-debug python2-iml-agent-management kernel-devel-lustre pcs fence-agents fence-agents-virsh lustre-resource-agents lustre-ldiskfs-zfs python2-iml-agent-4.2.0-1.el7
 
-    #systemctl reboot
+      #systemctl reboot
 
-    #lnetctl net del --net tcp
+      #lnetctl net del --net tcp
   
-    #lnetctl net add --net tcp --if eth1
+      #lnetctl net add --net tcp --if eth1
   
-    config ntp
+      config ntp
 mds1
 ----
-    #passwd hacluster      //모든 서버에서 설정
+      #passwd hacluster      //모든 서버에서 설정
   
-    #pcs cluster auth mds1.local mds2.local 
-  username:
-  password:
-  mds1.local: Authorized
-  mds2.local: Authorized
-  #pcs cluster setup --start --name mds-cluster mds1.local mds2.local --enable --token 17000
-  #pcs stonith create st-fencing fence_chroma
+      #pcs cluster auth mds1.local mds2.local 
+      username:
+      password:
+      mds1.local: Authorized
+      mds2.local: Authorized
+      #pcs cluster setup --start --name mds-cluster mds1.local mds2.local --enable --token 17000
+      #pcs stonith create st-fencing fence_chroma
   
 oss1
 ----
-  #pcs cluster auth oss1.local oss2.local 
-  username:
-  password:
-  oss1.local: Authorized
-  oss2.local: Authorized
-  #pcs cluster setup --start --name oss-cluster oss1.local oss2.local --enable --token 17000
-  #pcs stonith create st-fencing fence_chroma
+      #pcs cluster auth oss1.local oss2.local 
+      username:
+      password:
+      oss1.local: Authorized
+      oss2.local: Authorized
+      #pcs cluster setup --start --name oss-cluster oss1.local oss2.local --enable --token 17000
+      #pcs stonith create st-fencing fence_chroma
   
 
 pcs cluster node add 10.128.0.11: 0
@@ -115,14 +123,20 @@ Restarting pcsd on the nodes in order to reload the certificates...
 stonith resource 만 등록되어있음
 
 디스크 포맷
+---------
 
-mkfs.lustre --mgs --failnode=10.73.20.12@tcp0 --backfstype=zfs --mkfsoptions="mountpoint=none" mgtpool/MGS
+mgt
+---
+      mkfs.lustre --mgs --failnode=10.73.20.12@tcp0 --backfstype=zfs --mkfsoptions="mountpoint=none" mgtpool/MGS
+mdt
+---
+      mkfs.lustre --mdt --mgsnode=10.73.20.11@tcp0 --mgsnode=10.73.20.12@tcp0 --failnode=10.73.20.11@tcp0 --index=0 --backfstype=zfs --fsname=hello --mkfsoptions="mountpoint=none" mdtpool/hello-MDT0000
 
-mkfs.lustre --mdt --mgsnode=10.73.20.11@tcp0 --mgsnode=10.73.20.12@tcp0 --failnode=10.73.20.11@tcp0 --index=0 --backfstype=zfs --fsname=hello --mkfsoptions="mountpoint=none" mdtpool/hello-MDT0000
+ost
+---
+      mkfs.lustre --ost --mgsnode=10.73.20.11@tcp0 --mgsnode=10.73.20.12@tcp0 --failnode=10.73.20.22@tcp0 --index=0 --backfstype=zfs --fsname=hello --mkfsoptions="mountpoint=none" ostpool1/hello-OST0000
 
-mkfs.lustre --ost --mgsnode=10.73.20.11@tcp0 --mgsnode=10.73.20.12@tcp0 --failnode=10.73.20.22@tcp0 --index=0 --backfstype=zfs --fsname=hello --mkfsoptions="mountpoint=none" ostpool1/hello-OST0000
-
-mkfs.lustre --ost --mgsnode=10.73.20.11@tcp0 --mgsnode=10.73.20.12@tcp0 --failnode=10.73.20.21@tcp0 --index=1 --backfstype=zfs --fsname=hello --mkfsoptions="mountpoint=none" ostpool2/hello-OST0001
+      mkfs.lustre --ost --mgsnode=10.73.20.11@tcp0 --mgsnode=10.73.20.12@tcp0 --failnode=10.73.20.21@tcp0 --index=1 --backfstype=zfs --fsname=hello --mkfsoptions="mountpoint=none" ostpool2/hello-OST0001
 
 
 
