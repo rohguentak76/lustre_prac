@@ -55,6 +55,7 @@ createrepo -g /path/to/mygroups.xml /srv/my/repo      //그룹list 추가
 
 monitored zfs
 -------------
+
 mds[1,2] oss[1,2]
 -----------------
       #yum install -y --exclude kernel-debug python2-iml-agent-management kernel-devel-lustre pcs fence-agents fence-agents-virsh lustre-resource-agents lustre-ldiskfs-zfs python2-iml-agent-4.2.0-1.el7
@@ -68,6 +69,7 @@ mds[1,2] oss[1,2]
       config ntp
 mds1
 ----
+https://wiki.whamcloud.com/display/PUB/Using+Pacemaker+1.1+with+a+Lustre+File+System  
       #passwd hacluster      //모든 서버에서 설정
   
       #pcs cluster auth mds1.local mds2.local 
