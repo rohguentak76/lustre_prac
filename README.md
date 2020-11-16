@@ -9,6 +9,18 @@
       7. dataset 생성
       8. 마운트
       9. iml
+      
+      
+-----------------------------------
+tunefs nomgs 사용
+--------------------------------
+1. 모든 러스터 볼륨 umount 후 러스터 모듈 제거
+
+2. tunefs.lustre --reformat --nomgs --mgsnode=${mds01 ip} --mgsnode=${mds02 ip} --writeconf /dev/mapper/scratch-mdt
+
+3. home-mdt 는 --writeconf 옵션만 주고 러스터 모듈 올리고 다시마운트
+
+4. ost 의 경유 --reformat --writeconf 옵션 준 
  
 ------------------------------------
 managed lustre
