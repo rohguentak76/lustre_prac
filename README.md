@@ -20,7 +20,9 @@ tunefs nomgs 사용
 
 3. home-mdt 는 --writeconf 옵션만 주고 러스터 모듈 올리고 다시마운트
 
-4. ost 의 경유 --reformat --writeconf 옵션 준 
+4. ost 의 경유 --reformat --writeconf 옵션 준
+
+5. 기존에 scratch에 마운트되어있던 것들은 --erase-param한후 --mgsnode --servicenode 
  
 ------------------------------------
 managed lustre
