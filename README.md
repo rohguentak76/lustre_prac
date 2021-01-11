@@ -157,5 +157,40 @@ ost
       mkfs.lustre --ost --mgsnode=10.73.20.11@tcp0 --mgsnode=10.73.20.12@tcp0 --failnode=10.73.20.21@tcp0 --index=1 --backfstype=zfs --fsname=hello --mkfsoptions="mountpoint=none" ostpool2/hello-OST0001
 
 
+iml email 설정
+-------------
+1. smtp 서버 설정
 
+            sendmail 설치
+            # yum install -y sendmail sendmail-cf    //sendmail : 메일전송 메이전트, sendmail설정
+            # vi /etc/mail/sendmail.mc               //52,53번 라인 주석 제거 (dnl제거)
+            # m4 sendmail.mc > sendmail.cf
+            # systemctl restart sendmail
+            # yum install -y mailx                   // mail 송신 test
+            # mail xxx@xxx.xxx
+            Subject: title
+            context
+            context
+            .
+            EOT
+            
+            메일 전송이 되지 않고, 로그에 rejecting connections on daemon MTA: load average: 12 가 표시될 경우
+            - sendmail.cf 395번째 라인의 주석(#)제거 후 값을 12 -> 30으로 변경
+            # vi sendmail.cf
 
+            ----  변경 전 ----
+            394 # load average at which we refuse connections
+            395 #O RefuseLA=12
+
+            ----  변경 후 ----
+            394 # load average at which we refuse connections
+            395 O RefuseLA=30
+             - QueueLA : 처리중인 메일 프로세스가 해당 수치에 도달하면 queue에 적재
+             - 메일 프로세스가 해당 수치에 도달하면 접속을 거부
+            
+2. iml 설정
+            # vi /usr/share/chroma-manager/local_settings.py   //chroma설치 및 초기 설정 이후 추가 설정시 local_settings.py
+            EMAIL_HOST='hostname.domainname'
+            EMAIL_SENDER='iml@xxx.xxx'            //email의 from에 명시될 이름
+            
+            # chroma-config restart
