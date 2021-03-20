@@ -67,6 +67,32 @@ yum grouplist 추가
 -----------------
 createrepo -g /path/to/mygroups.xml /srv/my/repo      //그룹list 추가
 
+디스크 포맷
+---------
+
+mgt
+---
+      mkfs.lustre --mgs --failnode=10.73.20.12@tcp0 --backfstype=zfs --mkfsoptions="mountpoint=none" mgtpool/MGS
+      mkfs.lustre --mgs --servicenode 192.168.227.11@tcp1 --servicenode 192.168.227.12@tcp1 --backfstype=ldiskfs /dev/dm-1
+mdt
+---
+      mkfs.lustre --mdt --mgsnode=10.73.20.11@tcp0 --mgsnode=10.73.20.12@tcp0 --failnode=10.73.20.11@tcp0 --index=0 --backfstype=zfs --fsname=hello --mkfsoptions="mountpoint=none" mdtpool/hello-MDT0000
+      
+      mkfs.lustre --mdt --fsname demo --index 0 --mgsnode 192.168.227.11@tcp1 --mgsnode 192.168.227.12@tcp1 --servicenode 192.168.227.12@tcp1 --servicenode 192.168.227.11@tcp1 /dev/dm-2
+
+ost
+---
+      mkfs.lustre --ost --mgsnode=10.73.20.11@tcp0 --mgsnode=10.73.20.12@tcp0 --failnode=10.73.20.22@tcp0 --index=0 --backfstype=zfs --fsname=hello --mkfsoptions="mountpoint=none" ostpool1/hello-OST0000
+
+      mkfs.lustre --ost --mgsnode=10.73.20.11@tcp0 --mgsnode=10.73.20.12@tcp0 --failnode=10.73.20.21@tcp0 --index=1 --backfstype=zfs --fsname=hello --mkfsoptions="mountpoint=none" ostpool2/hello-OST0001
+      
+      
+      
+      mkfs.lustre --ost --fsname demo --index 0 --mgsnode 192.168.227.11@tcp1 --mgsnode 192.168.227.12@tcp1 --servicenode 192.168.227.21@tcp1 --servicenode 192.168.227.22@tcp1 /dev/dm-3
+      
+      
+
+
 monitored zfs
 -------------
 
@@ -140,21 +166,6 @@ iml상 pacemaker 설정
 
 stonith resource 만 등록되어있음
 
-디스크 포맷
----------
-
-mgt
----
-      mkfs.lustre --mgs --failnode=10.73.20.12@tcp0 --backfstype=zfs --mkfsoptions="mountpoint=none" mgtpool/MGS
-mdt
----
-      mkfs.lustre --mdt --mgsnode=10.73.20.11@tcp0 --mgsnode=10.73.20.12@tcp0 --failnode=10.73.20.11@tcp0 --index=0 --backfstype=zfs --fsname=hello --mkfsoptions="mountpoint=none" mdtpool/hello-MDT0000
-
-ost
----
-      mkfs.lustre --ost --mgsnode=10.73.20.11@tcp0 --mgsnode=10.73.20.12@tcp0 --failnode=10.73.20.22@tcp0 --index=0 --backfstype=zfs --fsname=hello --mkfsoptions="mountpoint=none" ostpool1/hello-OST0000
-
-      mkfs.lustre --ost --mgsnode=10.73.20.11@tcp0 --mgsnode=10.73.20.12@tcp0 --failnode=10.73.20.21@tcp0 --index=1 --backfstype=zfs --fsname=hello --mkfsoptions="mountpoint=none" ostpool2/hello-OST0001
 
 
 iml email 설정
