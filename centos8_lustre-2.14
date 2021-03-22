@@ -1,0 +1,36 @@
+러스터 설치
+---------
+      yum-config-manager --add-repo=https://downloads.whamcloud.com/public/lustre/lustre-2.14.0/el8.3/server
+      yum-config-manager --add-repo=https://downloads.whamcloud.com/public/e2fsprogs/latest/el8/
+      yum install -y --nogpgcheck lustre kmod-lustre-osd-ldiskfs
+      
+
+디바이스 포맷
+----------
+      mkfs.lustre --mgs --failnode=10.73.20.12@tcp --backfstype=ldiskfs /dev/mapper/mpatha
+      mkfs.lustre --mdt --fsname test --index 0 --mgsnode 10.73.20.11@tcp --mgsnode 10.73.20.12@tcp \
+      --failnode=10.73.20.11@tcp /dev/mapper/mpathb
+      
+      mkfs.lustre --ost --fsname test --index 0 --mgsnode 10.73.20.11@tcp --mgsnode 10.73.20.12@tcp \
+      --failnode=10.73.20.22@tcp /dev/mapper/mpatha
+      mkfs.lustre --ost --fsname test --index 1 --mgsnode 10.73.20.11@tcp --mgsnode 10.73.20.12@tcp \
+      --failnode=10.73.20.21@tcp /dev/mapper/mpathb
+
+pacemaker 설정
+-------------
+      HighAvailability 레포 enable
+      yum install pcs pacemaker corosync
+      systemctl enable --now pcsd
+      passwd hacluster
+
+      pcs host auth mds1.local mds2.local
+      pcs cluster setup ha_cluster mds1.local mds2.local
+      
+      pcs cluster start --all
+      pcs cluster enable --all
+      
+pacemaker lustre resource 설정
+-----------------------------
+      yum install fence-agents lustre-resource-agents
+      pcs resource create mgs ocf:lustre:Lustre target=/dev/mapper/mpatha mountpoint=/mnt/lustre/mgs
+      pcs resource create mdt ocf:lustre:Lustre target=/dev/mapper/mpathb mountpoint=/mnt/lustre/mdt
