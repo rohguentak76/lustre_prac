@@ -109,6 +109,7 @@ mds[1,2] oss[1,2]
       config ntp
       
       #### python2-iml-agent-management 설치 해야 fence_chroma 사용 가능 ####
+      #### managerforlustre-manager-for-lustre-5.1 레포지토리에 패키지 있음 ####
 mds1
 ----
 https://wiki.whamcloud.com/display/PUB/Using+Pacemaker+1.1+with+a+Lustre+File+System  
